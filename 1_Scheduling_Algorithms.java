@@ -205,6 +205,223 @@ class SJF{
 	
 }
 
+class RoundRobin{
+    int n;
+    String id[];
+    int arr[]; // arrive
+    int bt[]; // burst
+    int quantum;
+    int ct[]; //compeletion
+    int tat[]; // turn around time
+    int wt[]; // waiting time
+
+    RoundRobin(int x, int q){
+        n = x;
+        id = new String[n];
+        arr = new int[n];
+        bt = new int[n];
+        quantum = q;
+        ct = new int[n];
+        tat = new int[n];
+        wt = new int[n];
+    }
+
+    void getData(){
+        for(int i=0;i<n;i++){
+            Scanner in = new Scanner(System.in);
+            System.out.println("Enter Process Id , arrival time , burst time - ");
+            id[i] = in.nextLine();
+            arr[i] = in.nextInt();
+            bt[i] = in.nextInt();
+        }
+        sortData();
+    }
+
+    void sortData(){
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                if(arr[j] < arr[i]){
+                    String temp1 = id[i];
+                    id[i] = id[j];
+                    id[j] = temp1;
+
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+
+                    temp = bt[i];
+                    bt[i] = bt[j];
+                    bt[j] = temp;
+                }
+            }
+        }
+    }
+
+    void calculation(){
+        int current_time = 0;
+        int running_process = -1;
+        int finished_processes = 0;
+        Queue<Integer> ready_queue = new LinkedList<>();
+
+        for(int i=0;i<n;i++){
+            ready_queue.add(i);
+        }
+
+        while(finished_processes != n){
+            if(running_process == -1 && !ready_queue.isEmpty()){
+                running_process = ready_queue.poll();
+            }
+
+            if(running_process != -1){
+                if(bt[running_process] > quantum){
+                    bt[running_process] -= quantum;
+                    current_time += quantum;
+                }
+                else{
+                    current_time += bt[running_process];
+                    ct[running_process] = current_time;
+                    tat[running_process] = ct[running_process] - arr[running_process];
+                    wt[running_process] = tat[running_process] - bt[running_process];
+                    finished_processes++;
+                    running_process = -1;
+                }
+            }
+
+            if(running_process == -1 && !ready_queue.isEmpty()){
+                running_process = ready_queue.poll();
+            }
+        }
+    }
+
+    void averageCalculation(){
+        double waitSum=0,tatSum=0;
+        for(int i=0;i<n;i++){
+            waitSum = waitSum + wt[i];
+            tatSum = tatSum + tat[i];
+        }
+        double avgWT = waitSum/n;
+        double avgTAT = tatSum/n;
+        System.out.println("Average Waiting time " + (avgWT));
+        System.out.println("Average Turn around time " + (avgTAT));
+    }
+
+    void displayTable(){
+        calculation();
+        System.out.println("ID\t\tArrival\t\tBurst\t\tComplete\tTurn\tWaiting");
+        for(int i=0;i<n;i++){
+            System.out.println(id[i]+"\t\t  "+arr[i]+"\t\t  "+bt[i]+"\t\t  "+ct[i]+"\t\t  "+tat[i]+"\t  "+wt[i]);
+        }
+        System.out.println(" ");
+    }
+}
+
+
+
+class Priority{
+    int n;
+    String id[];
+    int arr[]; // arrive
+    int bt[]; // burst
+    int priority[];
+    int ct[]; //compeletion
+    int tat[]; // turn around time
+    int wt[]; // waiting time
+
+    Priority(int x){
+        n = x;
+        id = new String[n];
+        arr = new int[n];
+        bt = new int[n];
+        priority = new int[n];
+        ct = new int[n];
+        tat = new int[n];
+        wt = new int[n];
+    }
+
+    void getData(){
+        for(int i=0;i<n;i++){
+            Scanner in = new Scanner(System.in);
+            System.out.println("Enter Process Id , arrival time , burst time , priority - ");
+            id[i] = in.nextLine();
+            arr[i] = in.nextInt();
+            bt[i] = in.nextInt();
+            priority[i] = in.nextInt();
+        }
+        sortData();
+    }
+
+    void sortData(){
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                if(priority[j] < priority[i]){
+                    String temp1 = id[i];
+                    id[i] = id[j];
+                    id[j] = temp1;
+
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+
+                    temp = bt[i];
+                    bt[i] = bt[j];
+                    bt[j] = temp;
+
+                    temp = priority[i];
+                    priority[i] = priority[j];
+                    priority[j] = temp;
+                }
+            }
+        }
+    }
+
+    void calculation(){
+        int current_time = 0;
+        int running_process = 0;
+        while(true){
+            if(current_time >= arr[n-1]){
+                break;
+            }
+            if(running_process == -1){
+                for(int i=0;i<n;i++){
+                    if(arr[i] <= current_time){
+                        running_process = i;
+                        break;
+                    }
+                }
+            }
+
+            if(running_process != -1){
+                ct[running_process] = current_time + bt[running_process];
+                tat[running_process] = ct[running_process] - arr[running_process];
+                wt[running_process] = tat[running_process] - bt[running_process];
+                running_process = -1;
+            }
+
+            current_time++;
+        }
+    }
+
+    void averageCalculation(){
+        double waitSum=0,tatSum=0;
+        for(int i=0;i<n;i++){
+            waitSum = waitSum + wt[i];
+            tatSum = tatSum + tat[i];
+        }
+        double avgWT = waitSum/n;
+        double avgTAT = tatSum/n;
+        System.out.println("Average Waiting time " + (avgWT));
+        System.out.println("Average Turn around time " + (avgTAT));
+    }
+
+    void displayTable(){
+        calculation();
+        System.out.println("ID\t\tArrival\t\tBurst\t\tComplete\tTurn\tWaiting");
+        for(int i=0;i<n;i++){
+            System.out.println(id[i]+"\t\t  "+arr[i]+"\t\t  "+bt[i]+"\t\t  "+ct[i]+"\t\t  "+tat[i]+"\t  "+wt[i]);
+        }
+        System.out.println(" ");
+    }
+}	
 
 
 
@@ -217,6 +434,8 @@ class Main{
      int n = in.nextInt();
      SJF p1 = new SJF(n);
      // FCFS p1 = new FCFS(n);
+     // RoundRobin p1 = new RoundRobin(n);
+     // Priority p1 = new Priority(n);
      char c = 'y';
      while(c != 'n'){
         System.out.println("------------------------------------------------------");
