@@ -374,30 +374,19 @@ class Priority{
         }
     }
 
-    void calculation(){
-        int current_time = 0;
-        int running_process = 0;
-        while(true){
-            if(current_time >= arr[n-1]){
-                break;
-            }
-            if(running_process == -1){
-                for(int i=0;i<n;i++){
-                    if(arr[i] <= current_time){
-                        running_process = i;
-                        break;
-                    }
+    void calculation() {
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                ct[i] = ar[i] + bt[i];
+            } else {
+                if (ar[i] > ct[i - 1]) {
+                    ct[i] = ar[i] + bt[i];
+                } else {
+                    ct[i] = ct[i - 1] + bt[i];
                 }
             }
-
-            if(running_process != -1){
-                ct[running_process] = current_time + bt[running_process];
-                tat[running_process] = ct[running_process] - arr[running_process];
-                wt[running_process] = tat[running_process] - bt[running_process];
-                running_process = -1;
-            }
-
-            current_time++;
+            tat[i] = ct[i] - ar[i];
+            wt[i] = tat[i] - bt[i];
         }
     }
 
