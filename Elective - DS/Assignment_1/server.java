@@ -19,7 +19,7 @@ public class server{
                     System.out.println(i);
                 }
             }
-            System.out.println("Connection is Successfully established");
+            System.out.println("Connection is Successfully closed");
             ss.close();
         }
         catch(Exception e){
