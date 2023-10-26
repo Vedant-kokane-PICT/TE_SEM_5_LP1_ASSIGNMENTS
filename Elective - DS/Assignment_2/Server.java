@@ -1,26 +1,30 @@
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.rmi.RemoteException;
 
-public class Server implements RemoteInterface {
-    public Server() {
-        // Constructor for server
+public class server implements RemoteInterface {
+    public server() {
     }
 
     public String sayHello(String name) throws RemoteException {
-        return "Hello, " + name;
+        return "Hello " + name;
     }
+
     public static void main(String[] args) {
         try {
-            Server obj = new Server();
+            server obj = new server();
             RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(obj, 0);
-            Registry registry = LocateRegistry.getRegistry();
+
+            // Create a registry on the default port (1099)
+            Registry registry = LocateRegistry.createRegistry(1099);
+
+            // Bind the remote object's stub in the registry
             registry.bind("RemoteInterface", stub);
+
             System.out.println("Server ready");
         } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
-            e.printStackTrace();
+            System.out.println("Server exception: " + e.getMessage());
         }
     }
 }
