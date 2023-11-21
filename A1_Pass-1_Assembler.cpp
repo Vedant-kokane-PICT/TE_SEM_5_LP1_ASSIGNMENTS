@@ -1,5 +1,6 @@
 // Vedant Kokane 
 // 31430
+
 #include<iostream>
 #include<map>
 #include<vector>
@@ -50,7 +51,7 @@ int main(){
 
 	int lc = 0;
 	ifstream in;
-	in.open("input2.txt",ios::in);
+	in.open("input.txt",ios::in);
 	ofstream out;
 	out.open("intermediate.txt",ios::out);
 	int sCnt = 0,lCnt = 0, litStart = -1;
@@ -65,36 +66,36 @@ int main(){
 		}
 		for(int i=0;i<decode.size();i++){
 			if(decode[i] == "START"){
-				cout<<me[decode[i]]<<" (C,01) ";
+				out<<me[decode[i]]<<" (C,01) ";
 				lc = stoi(decode[i+1]) - 1;
 				lc++;
 				i++;
 			}
 			else if(decode[i] == "DS" || decode[i] == "DC"){
-				cout<<me[decode[i]]<<" ";
+				out<<me[decode[i]]<<" ";
 			}
 			else if(decode[i] == "LTORG"){
-				cout<<me[decode[i]]<<" ";
+				out<<me[decode[i]]<<" ";
 				litStart = lc;
 				continue;
 			}
 			else if(me.find(decode[i]) != me.end()){
-				cout<<me[decode[i]]<<" ";
+				out<<me[decode[i]]<<" ";
 			}
 			else if(decode[i][0] == '='){
 				string x = decode[i].substr(2,1);
 				if(literal.find(x) == literal.end()){
 					literal[x].first = 0;
 					literal[x].second = lCnt++;
-					cout<<"(L,"<<literal[x].second<<") ";
+					out<<"(L,"<<literal[x].second<<") ";
 					lit.push_back(x);
 				}
 				else{
-					cout<<"(L,"<<literal[x].second<<") ";
+					out<<"(L,"<<literal[x].second<<") ";
 				}
 			}
 			else if(decode[i][0] <= '0' && decode[i][0] <= '9'){
-				cout<<"(C,01) ";
+				out<<"(C,01) ";
 			}
 			else if(decode[i] == "LTORG"){
 				string x = decode[i];
@@ -102,7 +103,7 @@ int main(){
 				int num = stoi(x.substr(n - 1, 1));
 				string sym = x.substr(0,n-1);
 				lc = symbol[sym].first;
-				cout<<me[decode[i]]<<" ";
+				out<<me[decode[i]]<<" ";
 				i++;
 			}
 			else{
@@ -114,25 +115,23 @@ int main(){
 					symbol[x].first = lc++;
 					symbol[x].second = sCnt++;
 				}
-				cout<<"(S,"<<symbol[x].second<<") ";
+				out<<"(S,"<<symbol[x].second<<") ";
 			}
 		}
-		cout<<endl;
+		out<<endl;
 	}
-	cout<<endl;
+	out<<endl;
 	if(litStart == -1){
 		litStart = lc;
 	}
 
 	for(auto x: lit){
-		cout<<x<<" = "<<litStart++<<endl;
+		out<<x<<" = "<<litStart++<<endl;
 	}
 
 	for(auto x:symbol){
-		cout<<x.first<<" = "<<x.second.first<<endl;
+		out<<x.first<<" = "<<x.second.first<<endl;
 	}
 
 	return 0;
 }
-
-
