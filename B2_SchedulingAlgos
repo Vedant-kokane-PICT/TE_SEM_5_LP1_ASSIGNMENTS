@@ -1,0 +1,193 @@
+// Vedant Kokane
+// 31430
+#include<bits/stdc++.h>
+using namespace std;
+
+/*
+p1 0 6 2
+p2 1 8 1
+p3 2 7 3
+p4 3 3 4
+
+*/
+
+class process{
+public:
+	string id;
+	int arrival,burst, completion , tat, waiting,priority;
+
+	process(){
+		id = "";
+		arrival = burst = completion = tat = waiting = 0;
+	}
+};
+
+const static bool cmpArr(process& p1, process& p2){
+	return p1.arrival < p2.arrival;
+}
+
+const static bool cmpBur(process& p1, process& p2){
+	return p1.burst < p2.burst;
+}
+
+const static bool cmpPrio(process& p1, process& p2){
+	return p1.priority > p2.priority;
+}
+
+
+class Scheduling{
+public:
+	vector<process> pro;
+	int n;
+	Scheduling(int n){
+		this->n = n;
+		pro = vector<process>(n);
+	}
+
+	void getData(){
+		for(int i=0;i<n;i++){
+			cout<<"Enter process ID, arrival, burst time , priority- "<<endl;
+			cin>>pro[i].id;
+			cin>>pro[i].arrival;
+			cin>>pro[i].burst;
+			cin>>pro[i].priority;
+			
+		}
+	}
+	
+	void SJF() {
+		vector<int> time;
+		vector<string> ids; 
+	    sort(pro.begin(),pro.end(),cmpArr);
+	    vector<int> rem(n);
+	    for(int i=0;i<n;i++){
+	    	rem[i] = pro[i].burst;
+	    }
+	    int comp = 0, curr =0 ;
+	    while(comp < n){
+	    	int shortest = -1;
+	    	for(int i=0;i<n;i++){
+	    		if(pro[i].arrival <= curr && rem[i] > 0 && 
+	    			(shortest == -1 || rem[i] < rem[shortest])){
+	    			shortest = i;
+	    		}
+	    	}
+	    	if(shortest == -1){
+	    		curr++;
+	    		continue;
+	    	}
+	    	rem[shortest]--;
+	    	curr++;
+	    	if(rem[shortest] == 0){
+	    		ids.push_back(pro[shortest].id);
+	    		time.push_back(curr);
+	    		comp++;
+	    	}
+	    }
+
+
+	    for(int i=0;i<n;i++){
+	    	cout<<ids[i]<<"\t";
+	    }
+	    cout<<endl;
+	    for(int i=0;i<n;i++){
+	    	cout<<time[i]<<"\t";
+	    }
+	    cout<<endl;
+	    table();
+	}
+
+	void FCFS(){
+		vector<int> time;
+		vector<string> ids; 
+	    sort(pro.begin(), pro.end(), cmpArr);
+	    int com = 0;
+	    for(int i=0;i<n;i++){
+	    	if(i == 0){
+	    		pro[i].completion = pro[i].arrival + pro[i].burst;
+	    	}
+	    	else{
+	    		if(pro[i].arrival > pro[i-1].completion){
+	    			pro[i].completion = pro[i].arrival + pro[i].burst;
+	    		}
+	    		else{
+	    			pro[i].completion = pro[i-1].completion + pro[i].burst;
+	    		}
+	    	}
+	    }
+	    for(int i=0;i<n;i++){
+	    	cout<<pro[i].id<<"\t";
+	    }
+	    cout<<endl;
+	    for(int i=0;i<n;i++){
+	    	cout<<pro[i].completion<<"\t";
+	    }
+	    cout<<endl;
+	    table();
+	}
+	
+	void priority() {
+	    vector<int> time;
+	    vector<string> ids;
+	    sort(pro.begin(), pro.end(), cmpArr);
+	    int cnt = 1;
+	    for (int i = 0; i < n; i++) {
+	        if (i == 0 || pro[i].arrival > pro[i-1].completion) {
+	            pro[i].completion = pro[i].arrival + pro[i].burst;
+	        } 
+	        else{
+	        	sort(pro.begin()+cnt, pro.end(), cmpPrio);
+	        	cnt++;
+	        	if(pro[i].arrival > pro[i-1].completion){
+	    			pro[i].completion = pro[i].arrival + pro[i].burst;
+	    		}
+	    		else{
+	    			pro[i].completion = pro[i-1].completion + pro[i].burst;
+	    		}
+	        }
+	    }
+
+	    for (int i = 0; i < n; i++) {
+	        cout << pro[i].id << "\t";
+	    }
+	    cout << endl;
+
+	    for (int i = 0; i < n; i++) {
+	        cout << pro[i].completion << "\t";
+	    }
+	}
+
+	void table(){
+		for(int i=0;i<n;i++){
+			if(i == 0){
+				pro[i].completion = pro[i].arrival + pro[i].burst;
+			}
+			else{
+				if(pro[i].arrival > pro[i-1].completion){
+					pro[i].completion = pro[i].arrival + pro[i].burst;
+				}
+				else{
+					pro[i].completion = pro[i-1].completion + pro[i].burst;
+				}
+			}
+			pro[i].tat = pro[i].completion - pro[i].arrival;
+			pro[i].waiting = pro[i].completion - pro[i].burst;
+		}
+
+		cout<<"ProcessID\t\t Arrival\t\t Burst\t\t Completion\t\t Priority\t\t \t\ttat \t\twaiting"<<endl;
+		for(int i=0;i<n;i++){
+			cout<<pro[i].id<<"\t\t\t\t\t"<<pro[i].arrival<<"\t\t\t\t"<<pro[i].burst<<"\t\t\t\t"<<pro[i].completion<<"\t\t\t\t"<<pro[i].priority<<"\t\t\t\t"<<pro[i].tat<<"\t\t\t\t"<<pro[i].waiting<<endl;
+		}
+	}
+};
+
+
+int main(){
+	Scheduling s1(4);
+	s1.getData();
+	s1.FCFS();
+	//s1.SJF();
+	//s1.priority();
+	//s1.roundRobin(2);
+	return 0;
+}
